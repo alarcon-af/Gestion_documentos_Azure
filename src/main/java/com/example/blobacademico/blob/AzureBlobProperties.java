@@ -18,4 +18,7 @@ public class AzureBlobProperties {
 
     @Value("${azure.myblob.container}")
     private String container;
+
+    @Value("${azure.myblob.containerforum}")
+    private String containerForo;
 }

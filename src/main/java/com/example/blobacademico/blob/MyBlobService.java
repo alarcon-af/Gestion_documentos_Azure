@@ -28,6 +28,13 @@ public class MyBlobService {
         return container;
     }
 
+    private BlobContainerClient containerClientForum() {
+        BlobServiceClient serviceClient = new BlobServiceClientBuilder()
+                .connectionString(azureBlobProperties.getConnectionstring()).buildClient();
+        BlobContainerClient container = serviceClient.getBlobContainerClient(azureBlobProperties.getContainerForo());
+        return container;
+    }
+
     public List<String> listFiles() {
         log.info("List blobs BEGIN");
         BlobContainerClient container = containerClient();
@@ -50,6 +57,16 @@ public class MyBlobService {
         return os;
     }
 
+    public ByteArrayOutputStream downloadFileForum(String blobitem) {
+        log.info("Download BEGIN {}", blobitem);
+        BlobContainerClient containerClient = containerClientForum();
+        BlobClient blobClient = containerClient.getBlobClient(blobitem);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        blobClient.download(os);
+        log.info("Download END");
+        return os;
+    }
+
     public String storeFile(String filename, InputStream content, long length) {
         log.info("Azure store file BEGIN {}", filename);
         BlobClient client = containerClient().getBlobClient(filename);
@@ -61,5 +78,31 @@ public class MyBlobService {
 
         log.info("Azure store file END");
         return "File uploaded with success!";
+    }
+
+    public String storeFileForum(String filename, InputStream content, long length) {
+        log.info("Azure store file BEGIN {}", filename);
+        BlobClient client = containerClientForum().getBlobClient(filename);
+        if (client.exists()) {
+            log.warn("The file already exists. Deleting the existing file: {}", filename);
+            client.delete();
+        }
+
+        client.upload(content, length);
+
+        log.info("Azure store file END");
+        return "File uploaded with success!";
+    }
+
+    public String deleteFileForum(String filename) {
+        log.info("Azure store file BEGIN {}", filename);
+        BlobClient client = containerClientForum().getBlobClient(filename);
+        if (client.exists()) {
+            log.warn("The file already exists. Deleting the existing file: {}", filename);
+            client.delete();
+            return "File deleted with success!";
+        }else{
+            return "File does not exist!";
+        }
     }
 }

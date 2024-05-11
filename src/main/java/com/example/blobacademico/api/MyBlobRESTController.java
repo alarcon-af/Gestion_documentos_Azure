@@ -25,6 +25,12 @@ public class MyBlobRESTController {
         return myBlobService.listFiles();
     }
 
+    @GetMapping("/downloadForo/{filename}")
+    public byte[] downloadForo(@PathVariable String filename) {
+        log.info("download blobitem: {}", filename);
+        return myBlobService.downloadFileForum(filename).toByteArray();
+    }
+
 
     @GetMapping("/download/{filename}")
     public byte[] download(@PathVariable String filename) {
@@ -39,6 +45,21 @@ public class MyBlobRESTController {
         myBlobService.storeFile(file.getOriginalFilename(),file.getInputStream(), file.getSize());
         return file.getOriginalFilename() + " Has been saved as a blob-item!!!";
 
+    }
+
+    @PostMapping("/upload/foro")
+    public String uploadFileForum(MultipartFile file) throws IOException {
+        log.info("Filename :" + file.getOriginalFilename());
+        log.info("Size:" + file.getSize());
+        log.info("Contenttype:" + file.getContentType());
+        myBlobService.storeFileForum(file.getOriginalFilename(),file.getInputStream(), file.getSize());
+        return file.getOriginalFilename() + " Has been saved as a blob-item!!!";
+    }
+
+    @DeleteMapping("/delete/{fileName}")
+    public String deleteFileForum(@PathVariable String fileName) throws IOException {
+        myBlobService.deleteFileForum((fileName));
+        return fileName + " has been suucesfully deleted!!!";
     }
 
 }
